@@ -31,12 +31,14 @@ resource "google_project_service" "enabled_service" {
 }
 
 module "hello_service" {
-  source         = "./modules/hello_service"
-  project_id     = var.project_id
-  namespace      = var.namespace
-  region         = var.region
-  deploy_service = module.serverless_app.service.name
-  port           = 4000
+  source             = "./modules/hello_service"
+  project_id         = var.project_id
+  namespace          = var.namespace
+  region             = var.region
+  deploy_service     = module.serverless_app.service.name
+  port               = 4000
+  assets_bucket_name = "dist-apps-hello-browser"
+}
 }
 
 module "serverless_outbound" {

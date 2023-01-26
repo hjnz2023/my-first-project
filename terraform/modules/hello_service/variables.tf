@@ -17,3 +17,7 @@ variable "deploy_service" {
 variable "port" {
   type = number
 }
+
+variable "assets_bucket_name" {
+  type = string
+}

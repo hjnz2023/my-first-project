@@ -47,6 +47,10 @@ resource "google_cloudbuild_trigger" "main" {
       args = ["push", local.image]
     }
     step {
+      name = "gcr.io/cloud-builders/gsutil"
+      args = ["cp", "/workspace/dist/apps/hello/browser/*", "gs://${var.assets_bucket_name}/assets/"]
+    }
+    step {
       name = "gcr.io/cloud-builders/gcloud"
       args = ["run", "deploy", var.deploy_service,
       "--image", local.image, "--region", var.region, "--platform", "managed", "--port", var.port]
