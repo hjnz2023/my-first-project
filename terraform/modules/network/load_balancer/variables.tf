@@ -16,3 +16,7 @@ variable "ssl_policy" {
     id = string
   })
 }
+
+variable "backend_bucket" {
+  type = any
+}

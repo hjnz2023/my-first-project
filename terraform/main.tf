@@ -39,6 +39,11 @@ module "hello_service" {
   port               = 4000
   assets_bucket_name = "dist-apps-hello-browser"
 }
+
+module "assets" {
+  source = "./modules/assets"
+  region = var.region
+  name   = "dist-apps-hello-browser"
 }
 
 module "serverless_outbound" {
@@ -75,4 +80,5 @@ module "load_balancer" {
   service_name     = module.serverless_app.service.name
   ssl_certificates = module.ssl.certificate
   ssl_policy       = module.ssl.policy
+  backend_bucket   = module.assets.backend_bucket
 }
