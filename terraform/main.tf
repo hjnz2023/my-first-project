@@ -78,7 +78,7 @@ module "load_balancer" {
   source           = "./modules/network/load_balancer"
   region           = var.region
   service_name     = module.serverless_app.service.name
-  ssl_certificates = module.ssl.certificate
+  ssl_certificates = module.ssl.certificates
   ssl_policy       = module.ssl.policy
   backend_bucket   = module.assets.backend_bucket
 }

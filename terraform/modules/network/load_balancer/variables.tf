@@ -6,9 +6,9 @@ variable "service_name" {
 }
 
 variable "ssl_certificates" {
-  type = object({
+  type = list(object({
     id = string
-  })
+  }))
 }
 
 variable "ssl_policy" {

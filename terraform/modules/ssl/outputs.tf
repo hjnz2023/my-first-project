@@ -5,3 +5,7 @@ output "policy" {
 output "certificate" {
   value = google_compute_managed_ssl_certificate.main
 }
+
+output "certificates" {
+  value = [google_compute_managed_ssl_certificate.main, google_compute_managed_ssl_certificate.cert]
+}

@@ -18,6 +18,6 @@ resource "google_compute_url_map" "serverless_lb" {
 resource "google_compute_target_https_proxy" "serverless_lb_target_proxy" {
   name             = "serverless-lb-target-proxy"
   url_map          = google_compute_url_map.serverless_lb.id
-  ssl_certificates = [var.ssl_certificates.id]
+  ssl_certificates = [for ssl_cert in var.ssl_certificates : ssl_cert.id]
   ssl_policy       = var.ssl_policy.id
 }
