@@ -1,7 +1,6 @@
 resource "google_compute_url_map" "serverless_lb" {
   name            = "serverless-lb"
-  default_service = var.backend_bucket.id
-
+  default_service = google_compute_backend_service.global.id
   host_rule {
     hosts        = ["*"]
     path_matcher = "assets"
