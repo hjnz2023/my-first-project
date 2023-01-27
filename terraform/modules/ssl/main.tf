@@ -24,16 +24,3 @@ resource "google_compute_managed_ssl_certificate" "cert" {
     domains = var.managed_domains
   }
 }
-
-resource "google_compute_managed_ssl_certificate" "main" {
-  #   name = random_id.certificate.hex
-  name = var.namespace
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
-  managed {
-    domains = var.managed_domains
-  }
-}
