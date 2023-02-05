@@ -1,8 +1,3 @@
-resource "google_compute_ssl_policy" "main" {
-  name            = "tls1-2-modern"
-  profile         = "MODERN"
-  min_tls_version = "TLS_1_2"
-}
 
 resource "random_id" "cert" {
   byte_length = 4
