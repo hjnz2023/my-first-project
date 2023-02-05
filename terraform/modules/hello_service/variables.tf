@@ -21,3 +21,8 @@ variable "port" {
 variable "assets_bucket_name" {
   type = string
 }
+
+variable "optional_build_steps" {
+  type    = list(string)
+  default = []
+}

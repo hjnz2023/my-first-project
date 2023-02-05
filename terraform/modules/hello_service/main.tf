@@ -8,8 +8,15 @@ resource "google_sourcerepo_repository" "main" {
   name = "${var.namespace}-hello"
 }
 
+resource "google_storage_bucket_object" "newrelic_agent_js" {
+  name   = "assets/newrelic_agent.js"
+  source = "${path.module}/files/newrelic_agent.js"
+  bucket = var.assets_bucket_name
+}
+
 locals {
-  image = "gcr.io/${var.project_id}/${var.namespace}-hello:$COMMIT_SHA"
+  image       = "gcr.io/${var.project_id}/${var.namespace}-hello:$COMMIT_SHA"
+  build_image = "gcr.io/${var.project_id}/${var.namespace}-hello-build:$BRANCH_NAME"
 }
 
 resource "google_cloudbuild_trigger" "main" {
@@ -23,38 +30,53 @@ resource "google_cloudbuild_trigger" "main" {
   }
 
   build {
-    step {
-      name       = "node"
-      entrypoint = "npm"
-      args       = ["install"]
+
+    dynamic "step" {
+      for_each = contains(var.optional_build_steps, "build_image") == true ? [] : [1]
+      content {
+        name = "gcr.io/kaniko-project/executor:latest"
+        args = ["--dockerfile=Dockerfile.build", "--destination=${local.build_image}", "--cache=true", "--cache-ttl=6h"]
+      }
     }
     step {
-      name       = "node"
-      entrypoint = "npx"
+      name       = local.build_image
+      entrypoint = "pnpm"
+      args       = ["i", "--frozen-lockfile", "--store-dir", "/share/.pnpm-store"]
+      id         = "install"
+    }
+    step {
+      name       = local.build_image
+      entrypoint = "pnpm"
       args       = ["nx", "run", "hello:test"]
+      wait_for   = ["install"]
     }
     step {
-      name       = "node"
-      entrypoint = "npx"
+      name       = local.build_image
+      entrypoint = "pnpm"
       args       = ["nx", "run-many", "-t=server"]
+      id         = "build"
+      wait_for   = ["install"]
     }
     step {
-      name = "gcr.io/cloud-builders/docker"
-      args = ["build", "-t", local.image, "."]
+      name     = "gcr.io/kaniko-project/executor:latest"
+      args     = ["--destination=${local.image}", "--cache=true", "--cache-ttl=6h"]
+      wait_for = ["build"]
+      id       = "package'"
     }
     step {
-      name = "gcr.io/cloud-builders/docker"
-      args = ["push", local.image]
-    }
-    step {
-      name = "gcr.io/cloud-builders/gsutil"
-      args = ["cp", "/workspace/dist/apps/hello/browser/*", "gs://${var.assets_bucket_name}/assets/"]
+      name     = "gcr.io/cloud-builders/gsutil"
+      args     = ["-m", "cp", "/workspace/dist/apps/hello/browser/*", "gs://${var.assets_bucket_name}/assets/"]
+      wait_for = ["build"]
     }
     step {
       name = "gcr.io/cloud-builders/gcloud"
       args = ["run", "deploy", var.deploy_service,
       "--image", local.image, "--region", var.region, "--platform", "managed", "--port", var.port]
     }
+    # step {
+    #   name = "curl"
+    #   args = ["-X", "POST", "-H", "Content-Type: application/json", "-d", "{\"text\": \"Build ${COMMIT_SHA} of ${REPO_NAME} has been deployed to ${var.deploy_service}\"}", var.slack_webhook]
+    # }
   }
 }
 
