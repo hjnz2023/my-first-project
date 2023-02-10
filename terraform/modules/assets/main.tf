@@ -15,4 +15,5 @@ resource "google_storage_bucket_iam_member" "main" {
 resource "google_compute_backend_bucket" "main" {
   name        = var.name
   bucket_name = google_storage_bucket.main.name
+  enable_cdn  = true
 }

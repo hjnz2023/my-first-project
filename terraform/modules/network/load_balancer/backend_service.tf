@@ -13,6 +13,7 @@ resource "google_compute_backend_service" "global" {
   load_balancing_scheme           = "EXTERNAL_MANAGED"
   locality_lb_policy              = "ROUND_ROBIN"
   connection_draining_timeout_sec = 0
+  enable_cdn                      = true
 
   backend {
     group = google_compute_region_network_endpoint_group.main.id
