@@ -53,7 +53,7 @@ resource "google_cloudbuild_trigger" "main" {
     step {
       name       = local.build_image
       entrypoint = "pnpm"
-      args       = ["nx", "run-many", "-t=server"]
+      args       = ["nx", "server", "hello"]
       id         = "build"
       wait_for   = ["install"]
     }
