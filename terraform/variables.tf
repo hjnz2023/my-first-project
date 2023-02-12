@@ -17,7 +17,3 @@ variable "namespace" {
 variable "managed_domains" {
   type = list(string)
 }
-
-variable "managed_ssl_cert_name" {
-  type = string
-}

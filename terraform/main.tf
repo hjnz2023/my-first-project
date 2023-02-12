@@ -85,7 +85,6 @@ module "serverless_app" {
 module "ssl" {
   source          = "./modules/ssl"
   managed_domains = var.managed_domains
-  namespace       = var.managed_ssl_cert_name
 }
 
 module "load_balancer" {
