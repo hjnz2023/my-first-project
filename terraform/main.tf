@@ -11,7 +11,14 @@ locals {
     "iam.googleapis.com",
 
     "sourcerepo.googleapis.com",
-    "cloudbuild.googleapis.com"
+    "cloudbuild.googleapis.com",
+
+    "pubsub.googleapis.com",
+    "logging.googleapis.com",
+    "cloudfunctions.googleapis.com",
+    "artifactregistry.googleapis.com",
+
+    "firestore.googleapis.com"
   ]
 }
 
@@ -28,6 +35,12 @@ resource "google_project_service" "enabled_service" {
     when    = destroy
     command = "sleep 15"
   }
+}
+
+resource "google_app_engine_application" "main" {
+  project       = var.project_id
+  location_id   = "us-central"
+  database_type = "CLOUD_FIRESTORE"
 }
 
 module "hello_service" {
